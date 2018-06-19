@@ -9,11 +9,7 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+   
     protected $fillable = [
         'name', 'email', 'password',
     ];
@@ -86,6 +82,40 @@ class User extends Authenticatable
         $follow_user_ids = $this->followings()-> pluck('users.id')->toArray();
         $follow_user_ids[] = $this->id;
         return Micropost::whereIn('user_id', $follow_user_ids);
+    }
+    
+    public function favorite($micropostId)
+    {
+        $exist = $this->is_favorites($micropostId);
+        
+        if ($exist){
+            return false;
+        }else{
+        $this->favorites()->attach($micropostId);
+        return true;
+        }
+    }
+    
+    public function unfavorite($micropostId)
+    {
+        $exist = $this->is_favorites($micropostId);
+        
+        if ($exist){
+            $this->favorites()->detach($micropostId);
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    public function favorites()
+    {
+        return $this->belongsToMany(Micropost::class, 'favorites', 'user_id', 'favorite_id')->withTimestamps();
+    }
+    
+    public function is_favorites($micropostId)
+    {
+        return $this->favorites()->where('favorite_id', $micropostId)->exists();
     }
 
 }
