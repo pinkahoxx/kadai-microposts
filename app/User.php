@@ -39,21 +39,21 @@ class User extends Authenticatable
     }
 
     public function follow($userId)
-{
-    // confirm if already following
-    $exist = $this->is_following($userId);
-    // confirming that it is not you
-    $its_me = $this->id == $userId;
-
-    if ($exist || $its_me) {
-        // do nothing if already following
-        return false;
-    } else {
-        // follow if not following
-        $this->followings()->attach($userId);
-        return true;
+    {
+        // confirm if already following
+        $exist = $this->is_following($userId);
+        // confirming that it is not you
+        $its_me = $this->id == $userId;
+    
+        if ($exist || $its_me) {
+            // do nothing if already following
+            return false;
+        } else {
+            // follow if not following
+            $this->followings()->attach($userId);
+            return true;
+        }
     }
-}
     public function unfollow($userId)
     {
         // confirming if already following
@@ -87,12 +87,13 @@ class User extends Authenticatable
     public function favorite($micropostId)
     {
         $exist = $this->is_favorites($micropostId);
-        
+       
         if ($exist){
             return false;
         }else{
-        $this->favorites()->attach($micropostId);
-        return true;
+            
+            $this->favorites()->attach($micropostId);
+            return true;
         }
     }
     
